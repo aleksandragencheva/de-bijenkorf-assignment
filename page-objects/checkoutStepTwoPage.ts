@@ -1,13 +1,39 @@
-exports.CheckoutStepTwoPage = class CheckoutStepTwoPage {
+import { Locator, Page } from "@playwright/test";
 
-  /**
-   * @param {import('@playwright/test').Page} page
-   */
-  
-  constructor(page) {
+export class CheckoutStepTwoPage {
+  readonly page: Page;
+  // personal details
+  readonly emailTextbox: Locator;
+  readonly firstNameTextbox: Locator;
+  readonly lastNameTextbox: Locator;
+  readonly countryCombobox: Locator;
+  readonly postcodeTextbox: Locator;
+  readonly housenrTextbox: Locator;
+
+  // salutation
+  readonly mrButton: Locator;
+  readonly mrsButton: Locator;
+
+  // delivery country
+  readonly deliveryCountryButtonNL: Locator;
+  readonly deliveryCountryButtonBE: Locator;
+
+  // delivery method
+  readonly pickupPointButton: Locator;
+  readonly homeDeliveryButton: Locator;
+
+  // pick up point
+  readonly pickupPostcodeTextbox: Locator;
+  readonly findPickupButton: Locator;
+  readonly selectPickupButton: Locator;
+
+  // pay button
+  readonly proceedToPaymentButton: Locator;
+  readonly successStepsAlert: Locator
+
+  constructor(page: Page) {
     this.page = page;
-
-    // personal details
+    
     this.emailTextbox = page.getByLabel('E-mailadres*');
     this.firstNameTextbox = page.getByLabel('Voornaam*');
     this.lastNameTextbox = page.getByLabel('Achternaam*');
@@ -15,29 +41,30 @@ exports.CheckoutStepTwoPage = class CheckoutStepTwoPage {
     this.postcodeTextbox = page.getByLabel('Postcode*');
     this.housenrTextbox = page.getByLabel('Huisnummer.');
 
-    // salutation
     this.mrButton = page.getByLabel('Dhr.');
     this.mrsButton = page.getByLabel('Mevr.');
 
-    // delivery country
     this.deliveryCountryButtonNL = page.locator('#select-country-NL');
     this.deliveryCountryButtonBE = page.locator('#select-country-BE');
 
-    // delivery method
     this.pickupPointButton = page.getByTestId('pickup-point-button');
     this.homeDeliveryButton = page.getByTestId('POSTAL-button');
 
-    // pick up point
     this.pickupPostcodeTextbox = page.locator('#postalCode');
     this.findPickupButton = page.locator('find-postalCode');
     this.selectPickupButton = page.getByTestId('pickup-point-change-or-select').first();
 
-    // pay button
     this.proceedToPaymentButton = page.getByTestId('reservation-submit').last();
     this.successStepsAlert = page.getByTestId('success-steps');
   }
 
-  async fillInCustomerDetails(email, firstName, lastName, postcode, housenr) {
+  async fillInCustomerDetails(
+    email: string, 
+    firstName: string, 
+    lastName: string, 
+    postcode: string, 
+    housenr: string
+  ) {
     await this.emailTextbox.click();
     await this.emailTextbox.fill(email);
 
@@ -56,13 +83,13 @@ exports.CheckoutStepTwoPage = class CheckoutStepTwoPage {
     await this.housenrTextbox.fill(housenr);
   }
 
-  async selectDeliveryMethod(pickUpPoint) {
+  async selectDeliveryMethod(pickUpPoint: boolean) {
     if (pickUpPoint) {
       await this.pickupPointButton.click();
       await this.pickupPostcodeTextbox.click();
       await this.pickupPostcodeTextbox.fill('1101BX');
       // too many re-renders/requests seem to be happening after filling in the postal code, 
-      // this makes it less flakey
+      // pressing enter instead of the button makes it less flakey
       await this.page.keyboard.press('Enter');
       await this.selectPickupButton.click();
       

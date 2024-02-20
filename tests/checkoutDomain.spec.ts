@@ -1,23 +1,26 @@
-const { test, expect } = require('@playwright/test');
-const { BasketPage } = require('../pages/basket');
-const { CheckoutStepOnePage } = require('../pages/checkoutStepOne');
-const { CheckoutStepTwoPage } = require('../pages/checkoutStepTwo');
-const { PaymenentPage } = require('../pages/payment');
+import { test, expect } from '@playwright/test';
+import { BasketPage } from '../page-objects/basketPage';
+import { CheckoutStepOnePage } from '../page-objects/checkoutStepOnePage';
+import { CheckoutStepTwoPage } from '../page-objects/checkoutStepTwoPage';
+import { PaymentPage } from '../page-objects/paymentPage';
+import { CookiesComponent } from '../page-components/cookiesComponent';
 
 test.describe('Checkout Domain', () => {
-  let basketPage;
-  let stepOnePage;
-  let stepTwoPage;
-  let paymentPage;
+  let cookiesComponent: CookiesComponent;
+  let basketPage: BasketPage;
+  let stepOnePage: CheckoutStepOnePage;
+  let stepTwoPage: CheckoutStepTwoPage;
+  let paymentPage: PaymentPage;
 
   test.beforeEach(async ({ page }) => {
+    cookiesComponent = new CookiesComponent(page)
     basketPage = new BasketPage(page);
     stepOnePage = new CheckoutStepOnePage(page);
     stepTwoPage = new CheckoutStepTwoPage(page);
-    paymentPage = new PaymenentPage(page);
+    paymentPage = new PaymentPage(page);
 
     await page.goto('');
-    await page.getByRole('button', { name: 'Akkoord', exact: true }).click();  
+    await cookiesComponent.acceptAllCookies();
 
     /* Review basket and proceed */
     await expect(basketPage.basketHeader).toBeVisible();
