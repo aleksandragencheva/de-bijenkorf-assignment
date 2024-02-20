@@ -1,9 +1,14 @@
 import { Locator, Page } from "@playwright/test";
 
 export class CookiesComponent {
-  constructor(private page: Page) {}
+  readonly page: Page;
+  readonly acceptAllCookiesButton: Locator;
 
-  public acceptAllCookiesButton: Locator = this.page.getByRole('button', { name: 'Akkoord', exact: true });  
+  constructor(page: Page) {
+    this.page = page;
+
+    this.acceptAllCookiesButton = page.getByRole('button', { name: 'Akkoord', exact: true });  
+  }
 
   async acceptAllCookies() {
     await this.acceptAllCookiesButton.click();
